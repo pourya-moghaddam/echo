@@ -1,5 +1,6 @@
 package io.github.pourya_moghaddam.echo.user;
 
+import io.github.pourya_moghaddam.echo.community.dto.CommunityResponse;
 import io.github.pourya_moghaddam.echo.user.dto.UpdateThemeRequest;
 import io.github.pourya_moghaddam.echo.user.dto.UserResponse;
 import jakarta.validation.Valid;
@@ -7,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/users")
@@ -30,5 +33,11 @@ public class UserController {
             @Valid @RequestBody UpdateThemeRequest request) {
         UserResponse response = userService.updateTheme(userDetails.getUsername(), request);
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/me/communities")
+    public ResponseEntity<List<CommunityResponse>> getMyCommunities(
+            @AuthenticationPrincipal UserDetails userDetails) {
+        return ResponseEntity.ok(userService.getUserCommunities(userDetails.getUsername()));
     }
 }

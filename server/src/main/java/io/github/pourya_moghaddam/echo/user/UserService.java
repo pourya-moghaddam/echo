@@ -1,0 +1,30 @@
+package io.github.pourya_moghaddam.echo.user;
+
+import io.github.pourya_moghaddam.echo.exception.ResourceNotFoundException;
+import io.github.pourya_moghaddam.echo.user.dto.UpdateThemeRequest;
+import io.github.pourya_moghaddam.echo.user.dto.UserResponse;
+import org.springframework.stereotype.Service;
+
+@Service
+public class UserService {
+
+    private final UserRepository userRepository;
+
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
+    public UserResponse getCurrentUser(String username) {
+        User user = userRepository.findByUsernameIgnoreCase(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found: " + username));
+        return UserResponse.fromEntity(user);
+    }
+
+    public UserResponse updateTheme(String username, UpdateThemeRequest request) {
+        User user = userRepository.findByUsernameIgnoreCase(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found: " + username));
+        user.setThemePreference(request.themePreference());
+        User saved = userRepository.save(user);
+        return UserResponse.fromEntity(saved);
+    }
+}

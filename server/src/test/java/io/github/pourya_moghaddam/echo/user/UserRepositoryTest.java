@@ -20,7 +20,7 @@ class UserRepositoryTest {
     private UserRepository userRepository;
 
     @Test
-    void findByEmail_validEmail_returnsUser() {
+    void findByEmailIgnoreCase_validEmail_returnsUser() {
         // Given
         User user = new User();
         user.setEmail("test@example.com");
@@ -32,7 +32,7 @@ class UserRepositoryTest {
         userRepository.save(user);
 
         // When
-        Optional<User> found = userRepository.findByEmail("test@example.com");
+        Optional<User> found = userRepository.findByEmailIgnoreCase("TEST@Example.com");
 
         // Then
         assertThat(found).isPresent();
@@ -40,7 +40,7 @@ class UserRepositoryTest {
     }
 
     @Test
-    void findByUsername_validUsername_returnsUser() {
+    void findByUsernameIgnoreCase_validUsername_returnsUser() {
         // Given
         User user = new User();
         user.setEmail("test2@example.com");
@@ -50,7 +50,7 @@ class UserRepositoryTest {
         userRepository.save(user);
 
         // When
-        Optional<User> found = userRepository.findByUsername("testuser2");
+        Optional<User> found = userRepository.findByUsernameIgnoreCase("TestUser2");
 
         // Then
         assertThat(found).isPresent();

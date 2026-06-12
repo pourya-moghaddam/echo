@@ -20,7 +20,7 @@ class UserRepositoryTest {
     private UserRepository userRepository;
 
     @Test
-    void shouldSaveAndFindUserByEmail() {
+    void findByEmail_validEmail_returnsUser() {
         // Given
         User user = new User();
         user.setEmail("test@example.com");
@@ -40,7 +40,7 @@ class UserRepositoryTest {
     }
 
     @Test
-    void shouldFindUserByUsername() {
+    void findByUsername_validUsername_returnsUser() {
         // Given
         User user = new User();
         user.setEmail("test2@example.com");

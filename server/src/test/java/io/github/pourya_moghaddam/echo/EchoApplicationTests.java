@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Import;
 class EchoApplicationTests {
 
 	@Test
-	void contextLoads() {
+	void contextLoads_defaultContext_loadsSuccessfully() {
 	}
 
 }

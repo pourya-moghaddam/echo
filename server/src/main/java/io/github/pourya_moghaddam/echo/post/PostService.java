@@ -69,6 +69,12 @@ public class PostService {
                 .map(this::mapToResponse);
     }
 
+    @Transactional(readOnly = true)
+    public Page<PostResponse> getPopularPosts(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "score", "createdAt"));
+        return postRepository.findAll(pageable).map(this::mapToResponse);
+    }
+
     private PostResponse mapToResponse(Post post) {
         PostResponse response = new PostResponse();
         response.setId(post.getId());

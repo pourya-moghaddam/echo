@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom"
 import { MessageSquare, Share2, MoreHorizontal } from "lucide-react"
 import { Card } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { VoteWidget } from "./VoteWidget"
 import {
@@ -12,54 +11,47 @@ import {
 } from "@/components/ui/dropdown-menu"
 
 export interface PostProps {
-  id: string
-  community: string
-  author: string
-  timeAgo: string
+  id: string | number
+  communityName: string
+  authorUsername: string
+  createdAt: string
   title: string
-  contentSnippet?: string
+  content: string
   score: number
-  commentCount: number
-  tags?: string[]
+  commentCount?: number
   userVote?: 'up' | 'down' | null
 }
 
 export function PostCard({ post, onVote }: { post: PostProps, onVote?: (id: string, dir: 'up' | 'down') => void }) {
+  // Simple format for the timestamp for demonstration
+  const dateStr = new Date(post.createdAt).toLocaleDateString()
+
   return (
     <Card className="flex flex-row gap-0 py-0 overflow-hidden transition-colors bg-background ring-0 border border-border/40 shadow-none hover:bg-card group cursor-pointer">
       {/* Vote Sidebar */}
       <div className="bg-muted/30 px-2 py-3 w-12 flex flex-col items-center shrink-0 border-r border-border/50">
-        <VoteWidget score={post.score} userVote={post.userVote} onVote={(dir) => onVote?.(post.id, dir)} />
+        <VoteWidget score={post.score} userVote={post.userVote} onVote={(dir) => onVote?.(String(post.id), dir)} />
       </div>
 
       {/* Main Content */}
       <div className="flex-1 p-3 md:p-4 min-w-0">
         {/* Header */}
         <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
-          <Link to={`/c/${post.community}`} className="font-bold text-foreground hover:underline">
-            c/{post.community}
+          <Link to={`/c/${post.communityName}`} className="font-bold text-foreground hover:underline">
+            c/{post.communityName}
           </Link>
           <span>•</span>
-          <span>Posted by <Link to={`/u/${post.author}`} className="hover:underline">u/{post.author}</Link></span>
+          <span>Posted by <Link to={`/u/${post.authorUsername}`} className="hover:underline">u/{post.authorUsername}</Link></span>
           <span>•</span>
-          <span>{post.timeAgo}</span>
+          <span>{dateStr}</span>
         </div>
 
         {/* Title & Content */}
         <Link to={`/post/${post.id}`} className="block mb-2">
           <h2 className="text-lg font-semibold text-foreground mb-1 leading-snug">{post.title}</h2>
-          {post.tags && post.tags.length > 0 && (
-            <div className="flex gap-2 mb-2 flex-wrap">
-              {post.tags.map(tag => (
-                <Badge key={tag} variant="secondary" className="text-[10px] px-1.5 py-0">
-                  {tag}
-                </Badge>
-              ))}
-            </div>
-          )}
-          {post.contentSnippet && (
+          {post.content && (
             <p className="text-sm text-muted-foreground line-clamp-3">
-              {post.contentSnippet}
+              {post.content}
             </p>
           )}
         </Link>

@@ -1,13 +1,9 @@
 import { useInfiniteQuery } from "@tanstack/react-query"
-import { useStore } from "@/store/useStore"
 import { PostCard } from "@/components/shared/PostCard"
 import { Button } from "@/components/ui/button"
 import { postService } from "@/services/post"
-import { Link } from "react-router-dom"
 
-export default function Home() {
-  const { currentUser } = useStore()
-
+export default function Popular() {
   const {
     data,
     fetchNextPage,
@@ -15,44 +11,30 @@ export default function Home() {
     isFetchingNextPage,
     status,
   } = useInfiniteQuery({
-    queryKey: ['feed'],
-    queryFn: ({ pageParam = 0 }) => postService.getFeed(pageParam as number, 10),
+    queryKey: ['popular-posts'],
+    queryFn: ({ pageParam = 0 }) => postService.getPopular(pageParam as number, 10),
     getNextPageParam: (lastPage) => lastPage.last ? undefined : lastPage.number + 1,
     initialPageParam: 0,
-    enabled: !!currentUser, // Only fetch feed if logged in
   })
 
   const handleVote = async (id: string, dir: 'up' | 'down') => {
-    // Optimistic UI updates should be handled here or via react-query mutation in Phase 8
-    // For now we just call the API
     try {
       await postService.votePost(Number(id), dir.toUpperCase() as any)
-      // Ideally invalidate queries here, but Phase 8 handles voting properly
     } catch (e) {
       console.error(e)
     }
   }
 
-  if (!currentUser) {
-    return (
-      <div className="max-w-3xl mx-auto pb-12 w-full text-center mt-20 space-y-4">
-        <h2 className="text-2xl font-bold tracking-tight">Welcome to Echo</h2>
-        <p className="text-muted-foreground">Please log in to see your personalized feed.</p>
-        <Button asChild>
-          <Link to="/popular">Browse Popular Posts</Link>
-        </Button>
-      </div>
-    )
-  }
-
   return (
     <div className="max-w-3xl mx-auto pb-12 w-full">
-      <h1 className="text-2xl font-bold mb-6">Your Feed</h1>
+      <h1 className="text-2xl font-bold mb-6 flex items-center gap-2">
+        Popular Posts
+      </h1>
 
       {status === 'pending' ? (
-        <div className="text-center text-muted-foreground py-12">Loading feed...</div>
+        <div className="text-center text-muted-foreground py-12">Loading popular posts...</div>
       ) : status === 'error' ? (
-        <div className="text-center text-destructive py-12">Failed to load feed.</div>
+        <div className="text-center text-destructive py-12">Failed to load popular posts.</div>
       ) : (
         <div className="flex flex-col gap-4">
           {data.pages.map((page, i) => (
@@ -65,12 +47,7 @@ export default function Home() {
 
           {data.pages[0].content.length === 0 && (
             <div className="text-center text-muted-foreground py-12">
-              Your feed is empty. Join some communities to see posts here!
-              <div className="mt-4">
-                <Button variant="outline" asChild>
-                  <Link to="/popular">Browse Popular</Link>
-                </Button>
-              </div>
+              No popular posts yet.
             </div>
           )}
 

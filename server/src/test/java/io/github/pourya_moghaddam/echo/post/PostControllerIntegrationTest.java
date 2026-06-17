@@ -157,11 +157,34 @@ class PostControllerIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request2)));
 
-        // user2 should only see "Java Post" in feed
         mockMvc.perform(get("/api/feed")
                 .header("Authorization", "Bearer " + user2Token))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.content", hasSize(1)))
             .andExpect(jsonPath("$.content[0].title").value("Java Post"));
+    }
+
+    @Test
+    void getPopularPosts_returnsPaginatedPosts() throws Exception {
+        // Create 2 posts
+        PostCreateRequest request1 = new PostCreateRequest();
+        request1.setTitle("Post 1");
+        mockMvc.perform(post("/api/communities/java/posts")
+                .header("Authorization", "Bearer " + userToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request1)));
+
+        PostCreateRequest request2 = new PostCreateRequest();
+        request2.setTitle("Post 2");
+        mockMvc.perform(post("/api/communities/java/posts")
+                .header("Authorization", "Bearer " + userToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request2)));
+
+        mockMvc.perform(get("/api/posts/popular"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.content", hasSize(2)))
+            .andExpect(jsonPath("$.content[0].title").value("Post 2")) // latest first
+            .andExpect(jsonPath("$.content[1].title").value("Post 1"));
     }
 }

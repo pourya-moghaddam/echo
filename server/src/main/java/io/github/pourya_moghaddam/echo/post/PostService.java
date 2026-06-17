@@ -43,14 +43,14 @@ public class PostService {
 
     @Transactional(readOnly = true)
     public Page<PostResponse> getPostsByCommunity(String communityName, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "score", "createdAt"));
         return postRepository.findByCommunityName(communityName, pageable)
                 .map(this::mapToResponse);
     }
 
     @Transactional(readOnly = true)
     public Page<PostResponse> getFeed(String username, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "score", "createdAt"));
         User user = userRepository.findByUsernameIgnoreCase(username)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         var communityIds = user.getJoinedCommunities().stream()
@@ -72,6 +72,7 @@ public class PostService {
         response.setContent(post.getContent());
         response.setAuthorUsername(post.getAuthor().getUsername());
         response.setCommunityName(post.getCommunity().getName());
+        response.setScore(post.getScore());
         response.setCreatedAt(post.getCreatedAt());
         return response;
     }

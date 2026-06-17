@@ -1,6 +1,6 @@
-package io.github.pourya_moghaddam.echo.post;
+package io.github.pourya_moghaddam.echo.vote;
 
-import io.github.pourya_moghaddam.echo.community.Community;
+import io.github.pourya_moghaddam.echo.comment.Comment;
 import io.github.pourya_moghaddam.echo.user.User;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -9,31 +9,25 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "posts")
+@Table(name = "comment_votes", uniqueConstraints = {@UniqueConstraint(columnNames = {"user_id", "comment_id"})})
 @Getter
 @Setter
-public class Post {
-
+public class CommentVote {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String title;
-
-    @Column(columnDefinition = "TEXT")
-    private String content;
-
-    @Column(nullable = false)
-    private Integer score = 0;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "author_id", nullable = false)
-    private User author;
+    @JoinColumn(name = "comment_id", nullable = false)
+    private Comment comment;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "community_id", nullable = false)
-    private Community community;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private VoteDirection direction;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;

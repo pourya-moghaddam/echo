@@ -10,5 +10,6 @@ public class PostResponse {
     private String content;
     private String authorUsername;
     private String communityName;
+    private Integer score;
     private LocalDateTime createdAt;
 }

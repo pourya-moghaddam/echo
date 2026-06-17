@@ -17,6 +17,7 @@ import java.util.List;
 public class CommentController {
 
     private final CommentService commentService;
+    private final io.github.pourya_moghaddam.echo.vote.VoteService voteService;
 
     @PostMapping("/posts/{postId}/comments")
     @ResponseStatus(HttpStatus.CREATED)
@@ -37,5 +38,13 @@ public class CommentController {
     @GetMapping("/posts/{postId}/comments")
     public List<CommentResponse> getPostComments(@PathVariable Long postId) {
         return commentService.getPostComments(postId);
+    }
+
+    @PostMapping("/comments/{commentId}/vote")
+    public org.springframework.http.ResponseEntity<Void> voteComment(@PathVariable Long commentId,
+                                            @Valid @RequestBody io.github.pourya_moghaddam.echo.vote.dto.VoteRequest request,
+                                            @AuthenticationPrincipal UserDetails userDetails) {
+        voteService.voteComment(commentId, request, userDetails.getUsername());
+        return org.springframework.http.ResponseEntity.ok().build();
     }
 }

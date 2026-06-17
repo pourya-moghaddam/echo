@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 public class PostController {
 
     private final PostService postService;
+    private final io.github.pourya_moghaddam.echo.vote.VoteService voteService;
 
     @PostMapping("/communities/{name}/posts")
     public ResponseEntity<PostResponse> createPost(
@@ -41,5 +42,13 @@ public class PostController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         return ResponseEntity.ok(postService.getFeed(userDetails.getUsername(), page, size));
+    }
+
+    @PostMapping("/posts/{postId}/vote")
+    public ResponseEntity<Void> votePost(@PathVariable Long postId,
+                                         @Valid @RequestBody io.github.pourya_moghaddam.echo.vote.dto.VoteRequest request,
+                                         @AuthenticationPrincipal org.springframework.security.core.userdetails.UserDetails userDetails) {
+        voteService.votePost(postId, request, userDetails.getUsername());
+        return ResponseEntity.ok().build();
     }
 }

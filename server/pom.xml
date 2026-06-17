@@ -28,7 +28,7 @@
 	</scm>
 	<properties>
 		<java.version>25</java.version>
-		<elasticsearch.version>8.12.2</elasticsearch.version>
+		<elasticsearch.version>9.4.2</elasticsearch.version>
 	</properties>
 
 	<dependencies>

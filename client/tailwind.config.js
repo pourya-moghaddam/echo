@@ -42,6 +42,9 @@ export default {
           foreground: "var(--card-foreground)",
         },
       },
+      ringColor: {
+        DEFAULT: "var(--ring)",
+      },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",

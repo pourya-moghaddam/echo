@@ -28,3 +28,15 @@ yarn-error.log*
 .env.development.local
 .env.test.local
 .env.production.local
+
+# Vite / React test and cache
+coverage/
+.eslintcache
+
+# Java / Maven (for the server folder)
+target/
+*.class
+*.jar
+*.war
+*.ear
+.mvn/wrapper/maven-wrapper.jar

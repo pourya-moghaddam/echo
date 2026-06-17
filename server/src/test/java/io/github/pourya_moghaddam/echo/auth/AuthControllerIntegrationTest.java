@@ -6,6 +6,9 @@ import io.github.pourya_moghaddam.echo.auth.dto.LoginRequest;
 import io.github.pourya_moghaddam.echo.auth.dto.SignupRequest;
 import io.github.pourya_moghaddam.echo.user.User;
 import io.github.pourya_moghaddam.echo.user.UserRepository;
+import io.github.pourya_moghaddam.echo.community.CommunityRepository;
+import io.github.pourya_moghaddam.echo.post.PostRepository;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,14 +36,21 @@ class AuthControllerIntegrationTest {
 
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private CommunityRepository communityRepository;
+    @Autowired
+    private PostRepository postRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
     @BeforeEach
     void setUp() {
         objectMapper = new ObjectMapper();
-        userRepository.deleteAll();
+        jdbcTemplate.execute("TRUNCATE TABLE posts, user_communities, communities, users RESTART IDENTITY CASCADE");
     }
 
     // --- Signup Tests ---

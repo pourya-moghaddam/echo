@@ -2,9 +2,12 @@ package io.github.pourya_moghaddam.echo.comment;
 
 import io.github.pourya_moghaddam.echo.comment.dto.CommentCreateRequest;
 import io.github.pourya_moghaddam.echo.comment.dto.CommentResponse;
+import io.github.pourya_moghaddam.echo.vote.VoteService;
+import io.github.pourya_moghaddam.echo.vote.dto.VoteRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +20,7 @@ import java.util.List;
 public class CommentController {
 
     private final CommentService commentService;
-    private final io.github.pourya_moghaddam.echo.vote.VoteService voteService;
+    private final VoteService voteService;
 
     @PostMapping("/posts/{postId}/comments")
     @ResponseStatus(HttpStatus.CREATED)
@@ -41,10 +44,10 @@ public class CommentController {
     }
 
     @PostMapping("/comments/{commentId}/vote")
-    public org.springframework.http.ResponseEntity<Void> voteComment(@PathVariable Long commentId,
-                                            @Valid @RequestBody io.github.pourya_moghaddam.echo.vote.dto.VoteRequest request,
+    public ResponseEntity<Void> voteComment(@PathVariable Long commentId,
+                                            @Valid @RequestBody VoteRequest request,
                                             @AuthenticationPrincipal UserDetails userDetails) {
         voteService.voteComment(commentId, request, userDetails.getUsername());
-        return org.springframework.http.ResponseEntity.ok().build();
+        return ResponseEntity.ok().build();
     }
 }

@@ -63,7 +63,8 @@ public class VoteService {
         User user = userRepository.findByUsernameIgnoreCase(username)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-        Optional<CommentVote> existingVoteOpt = commentVoteRepository.findByUserIdAndCommentId(user.getId(), comment.getId());
+        Optional<CommentVote> existingVoteOpt =
+                commentVoteRepository.findByUserIdAndCommentId(user.getId(), comment.getId());
 
         int scoreChange = 0;
 

@@ -4,8 +4,10 @@ import io.github.pourya_moghaddam.echo.community.dto.CommunityResponse;
 import io.github.pourya_moghaddam.echo.community.dto.CreateCommunityRequest;
 import io.github.pourya_moghaddam.echo.exception.DuplicateResourceException;
 import io.github.pourya_moghaddam.echo.exception.ResourceNotFoundException;
+import io.github.pourya_moghaddam.echo.search.SearchService;
 import io.github.pourya_moghaddam.echo.user.User;
 import io.github.pourya_moghaddam.echo.user.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +17,8 @@ public class CommunityService {
 
     private final CommunityRepository communityRepository;
     private final UserRepository userRepository;
+    @Autowired
+    private SearchService searchService;
 
     public CommunityService(CommunityRepository communityRepository, UserRepository userRepository) {
         this.communityRepository = communityRepository;
@@ -39,6 +43,7 @@ public class CommunityService {
         creator.joinCommunity(community);
 
         Community saved = communityRepository.save(community);
+        searchService.indexCommunity(saved);
         return CommunityResponse.fromEntity(saved);
     }
 

@@ -61,7 +61,8 @@ public class CommentService {
             throw new ResourceNotFoundException("Post not found");
         }
 
-        List<Comment> topLevelComments = commentRepository.findByPostIdAndParentCommentIsNullOrderByCreatedAtDesc(postId);
+        List<Comment> topLevelComments =
+                commentRepository.findByPostIdAndParentCommentIsNullOrderByCreatedAtDesc(postId);
         return topLevelComments.stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());

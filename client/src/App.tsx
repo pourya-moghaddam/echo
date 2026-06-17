@@ -4,6 +4,7 @@ import { ThemeProvider } from "./components/theme-provider"
 import MainLayout from "./components/layout/MainLayout"
 import Home from "./pages/Home"
 import Popular from "./pages/Popular"
+import Community from "./pages/Community"
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -23,7 +24,7 @@ export default function App() {
             <Route path="/" element={<MainLayout />}>
               <Route index element={<Home />} />
               <Route path="popular" element={<Popular />} />
-              <Route path="c/:community" element={<div>Community Placeholder</div>} />
+              <Route path="c/:community" element={<Community />} />
               <Route path="search" element={<div>Search Results Placeholder</div>} />
             </Route>
           </Routes>

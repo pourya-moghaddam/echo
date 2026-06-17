@@ -30,6 +30,11 @@ export const postService = {
     return res.data;
   },
 
+  getCommunityPosts: async (communityName: string, page = 0, size = 10): Promise<PageResponse<Post>> => {
+    const res = await api.get(`/communities/${communityName}/posts`, { params: { page, size } });
+    return res.data;
+  },
+
   votePost: async (postId: number, direction: 'UP' | 'DOWN' | 'NONE'): Promise<void> => {
     await api.post(`/posts/${postId}/vote`, { direction });
   }

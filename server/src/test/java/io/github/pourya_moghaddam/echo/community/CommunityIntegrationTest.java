@@ -117,7 +117,7 @@ class CommunityIntegrationTest {
     }
 
     @Test
-    void getCommunity_returnsCommunityDetails() throws Exception {
+    void getCommunity_existingCommunity_returnsCommunityDetails() throws Exception {
         // Create community
         CreateCommunityRequest request =
                 new CreateCommunityRequest("spring", "Spring boot", CommunityCategory.PROGRAMMING);
@@ -135,7 +135,7 @@ class CommunityIntegrationTest {
     }
 
     @Test
-    void joinAndLeaveCommunity_updatesMemberCount() throws Exception {
+    void joinAndLeaveCommunity_validRequest_updatesMemberCount() throws Exception {
         // User1 creates community
         CreateCommunityRequest request = new CreateCommunityRequest("gaming", "Gamers", CommunityCategory.GAMING);
         mockMvc.perform(post("/api/communities")
@@ -168,7 +168,7 @@ class CommunityIntegrationTest {
     }
 
     @Test
-    void getUserCommunities_returnsJoinedCommunities() throws Exception {
+    void getUserCommunities_userJoinedCommunity_returnsJoinedCommunities() throws Exception {
         CreateCommunityRequest request =
                 new CreateCommunityRequest("movies", "Movie lovers", CommunityCategory.ENTERTAINMENT);
         mockMvc.perform(post("/api/communities")

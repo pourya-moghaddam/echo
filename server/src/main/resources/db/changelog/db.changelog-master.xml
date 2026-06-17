@@ -8,5 +8,6 @@
     <include file="db/changelog/01-create-users-table.xml"/>
     <include file="db/changelog/02-create-communities-table.xml"/>
     <include file="db/changelog/03-create-user-communities-table.xml"/>
+    <include file="db/changelog/04-create-posts-table.xml"/>
 
 </databaseChangeLog>

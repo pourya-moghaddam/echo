@@ -1,5 +1,5 @@
-import { Link } from "react-router-dom"
-import { Search } from "lucide-react"
+import { Link, useLocation } from "react-router-dom"
+import { Search, Plus } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -7,6 +7,7 @@ import { useStore } from "@/store/useStore"
 import { authService } from "@/services/auth"
 import { userService } from "@/services/user"
 import { useTheme } from "@/components/theme-provider"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,6 +19,10 @@ import {
 export default function Navbar() {
   const { currentUser, logout, setAuthModalOpen } = useStore()
   const { theme, setTheme } = useTheme()
+  const location = useLocation()
+  
+  const communityMatch = location.pathname.match(/^\/c\/([^\/]+)/)
+  const currentCommunity = communityMatch ? communityMatch[1] : ''
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -45,7 +50,21 @@ export default function Navbar() {
         <div className="flex items-center gap-2">
           <div className="hidden items-center gap-4 md:flex">
             {currentUser ? (
-              <DropdownMenu>
+              <>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button variant="ghost" size="icon" asChild>
+                      <Link to={`/submit${currentCommunity ? `?c=${currentCommunity}` : ''}`}>
+                        <Plus className="h-5 w-5" />
+                        <span className="sr-only">Create Post</span>
+                      </Link>
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Create Post</p>
+                  </TooltipContent>
+                </Tooltip>
+                <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Avatar className="h-8 w-8 cursor-pointer outline-none border-none ring-0">
                     <AvatarImage src={currentUser.avatarUrl} />
@@ -95,6 +114,7 @@ export default function Navbar() {
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
+              </>
             ) : (
               <>
                 <Button variant="ghost" onClick={() => setAuthModalOpen(true, 'login')}>Log in</Button>

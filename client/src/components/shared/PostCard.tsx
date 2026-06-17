@@ -10,6 +10,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
+import { formatTimeAgo } from "@/lib/utils"
+
 export interface PostProps {
   id: string | number
   communityName: string
@@ -22,9 +24,8 @@ export interface PostProps {
   userVote?: 'up' | 'down' | null
 }
 
-export function PostCard({ post, onVote }: { post: PostProps, onVote?: (id: string, dir: 'up' | 'down') => void }) {
-  // Simple format for the timestamp for demonstration
-  const dateStr = new Date(post.createdAt).toLocaleDateString()
+export function PostCard({ post, onVote, hideCommunity }: { post: PostProps, onVote?: (id: string, dir: 'up' | 'down') => void, hideCommunity?: boolean }) {
+  const dateStr = formatTimeAgo(post.createdAt)
 
   return (
     <Card className="flex flex-row gap-0 py-0 overflow-hidden transition-colors bg-background ring-0 border border-border/40 shadow-none hover:bg-card group cursor-pointer">
@@ -37,11 +38,19 @@ export function PostCard({ post, onVote }: { post: PostProps, onVote?: (id: stri
       <div className="flex-1 p-3 md:p-4 min-w-0">
         {/* Header */}
         <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
-          <Link to={`/c/${post.communityName}`} className="font-bold text-foreground hover:underline">
-            c/{post.communityName}
-          </Link>
-          <span>•</span>
-          <span>Posted by <Link to={`/u/${post.authorUsername}`} className="hover:underline">u/{post.authorUsername}</Link></span>
+          {!hideCommunity ? (
+            <>
+              <Link to={`/c/${post.communityName}`} className="font-bold text-foreground hover:underline">
+                c/{post.communityName}
+              </Link>
+              <span>•</span>
+              <span>Posted by <Link to={`/u/${post.authorUsername}`} className="hover:underline">u/{post.authorUsername}</Link></span>
+            </>
+          ) : (
+            <Link to={`/u/${post.authorUsername}`} className="font-bold text-foreground hover:underline">
+              u/{post.authorUsername}
+            </Link>
+          )}
           <span>•</span>
           <span>{dateStr}</span>
         </div>

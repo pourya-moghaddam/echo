@@ -46,6 +46,13 @@ public class PostController {
         return ResponseEntity.ok(postService.getFeed(userDetails.getUsername(), page, size));
     }
 
+    @GetMapping("/posts/popular")
+    public ResponseEntity<Page<PostResponse>> getPopularPosts(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(postService.getPopularPosts(page, size));
+    }
+
     @PostMapping("/posts/{postId}/vote")
     public ResponseEntity<Void> votePost(@PathVariable Long postId,
                                          @Valid @RequestBody VoteRequest request,

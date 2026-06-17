@@ -61,18 +61,35 @@ public class CommentService {
             throw new ResourceNotFoundException("Post not found");
         }
 
-        List<Comment> topLevelComments =
-                commentRepository.findByPostIdAndParentCommentIsNullOrderByCreatedAtDesc(postId);
-        return topLevelComments.stream()
-                .map(this::mapToResponse)
+        List<Comment> allComments = commentRepository.findAllByPostIdWithAuthor(postId);
+
+        java.util.Map<Long, List<Comment>> commentsByParentId = allComments.stream()
+                .filter(c -> c.getParentComment() != null)
+                .collect(Collectors.groupingBy(c -> c.getParentComment().getId()));
+
+        return allComments.stream()
+                .filter(c -> c.getParentComment() == null)
+                .map(c -> buildCommentTree(c, commentsByParentId))
                 .collect(Collectors.toList());
     }
 
     private CommentResponse mapToResponse(Comment comment) {
-        List<CommentResponse> repliesResponse = comment.getReplies() != null ?
-                comment.getReplies().stream()
-                        .map(this::mapToResponse)
-                        .collect(Collectors.toList()) : List.of();
+        return CommentResponse.builder()
+                .id(comment.getId())
+                .content(comment.getContent())
+                .authorUsername(comment.getAuthor().getUsername())
+                .postId(comment.getPost().getId())
+                .score(comment.getScore())
+                .createdAt(comment.getCreatedAt())
+                .replies(List.of())
+                .build();
+    }
+
+    private CommentResponse buildCommentTree(Comment comment, java.util.Map<Long, List<Comment>> commentsByParentId) {
+        List<CommentResponse> replies = commentsByParentId.getOrDefault(comment.getId(), List.of())
+                .stream()
+                .map(child -> buildCommentTree(child, commentsByParentId))
+                .collect(Collectors.toList());
 
         return CommentResponse.builder()
                 .id(comment.getId())
@@ -81,7 +98,7 @@ public class CommentService {
                 .postId(comment.getPost().getId())
                 .score(comment.getScore())
                 .createdAt(comment.getCreatedAt())
-                .replies(repliesResponse)
+                .replies(replies)
                 .build();
     }
 }

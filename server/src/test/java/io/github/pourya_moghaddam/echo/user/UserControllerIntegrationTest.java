@@ -107,4 +107,18 @@ class UserControllerIntegrationTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isUnauthorized());
     }
+
+    // --- PUT /api/users/avatar Tests ---
+
+    @Test
+    void updateAvatar_authenticated_returnsUpdatedAvatar() throws Exception {
+        io.github.pourya_moghaddam.echo.user.dto.UpdateAvatarRequest request = new io.github.pourya_moghaddam.echo.user.dto.UpdateAvatarRequest("new-avatar.png");
+
+        mockMvc.perform(put("/api/users/avatar")
+                        .header("Authorization", "Bearer " + validToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.avatarUrl").value("new-avatar.png"));
+    }
 }

@@ -136,6 +136,23 @@ class CommunityIntegrationTest {
     }
 
     @Test
+    void getCommunity_unauthenticated_returnsCommunityDetails() throws Exception {
+        // Create community
+        CreateCommunityRequest request =
+                new CreateCommunityRequest("publiccomm", "Public community", CommunityCategory.PROGRAMMING);
+        mockMvc.perform(post("/api/communities")
+                        .header("Authorization", "Bearer " + userToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isCreated());
+
+        // Get community without token!
+        mockMvc.perform(get("/api/communities/publiccomm"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("publiccomm"));
+    }
+
+    @Test
     void joinAndLeaveCommunity_validRequest_updatesMemberCount() throws Exception {
         // User1 creates community
         CreateCommunityRequest request = new CreateCommunityRequest("gaming", "Gamers", CommunityCategory.GAMING);

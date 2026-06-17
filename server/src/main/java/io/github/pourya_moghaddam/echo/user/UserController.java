@@ -2,6 +2,7 @@ package io.github.pourya_moghaddam.echo.user;
 
 import io.github.pourya_moghaddam.echo.community.dto.CommunityResponse;
 import io.github.pourya_moghaddam.echo.user.dto.UpdateThemeRequest;
+import io.github.pourya_moghaddam.echo.user.dto.UpdateAvatarRequest;
 import io.github.pourya_moghaddam.echo.user.dto.UserResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +33,14 @@ public class UserController {
             @AuthenticationPrincipal UserDetails userDetails,
             @Valid @RequestBody UpdateThemeRequest request) {
         UserResponse response = userService.updateTheme(userDetails.getUsername(), request);
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/avatar")
+    public ResponseEntity<UserResponse> updateAvatar(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @Valid @RequestBody UpdateAvatarRequest request) {
+        UserResponse response = userService.updateAvatar(userDetails.getUsername(), request);
         return ResponseEntity.ok(response);
     }
 

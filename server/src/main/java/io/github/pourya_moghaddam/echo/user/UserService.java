@@ -3,6 +3,7 @@ package io.github.pourya_moghaddam.echo.user;
 import io.github.pourya_moghaddam.echo.community.dto.CommunityResponse;
 import io.github.pourya_moghaddam.echo.exception.ResourceNotFoundException;
 import io.github.pourya_moghaddam.echo.user.dto.UpdateThemeRequest;
+import io.github.pourya_moghaddam.echo.user.dto.UpdateAvatarRequest;
 import io.github.pourya_moghaddam.echo.user.dto.UserResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +30,14 @@ public class UserService {
         User user = userRepository.findByUsernameIgnoreCase(username)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found: " + username));
         user.setThemePreference(request.themePreference());
+        User saved = userRepository.save(user);
+        return UserResponse.fromEntity(saved);
+    }
+
+    public UserResponse updateAvatar(String username, UpdateAvatarRequest request) {
+        User user = userRepository.findByUsernameIgnoreCase(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found: " + username));
+        user.setAvatarUrl(request.avatarUrl());
         User saved = userRepository.save(user);
         return UserResponse.fromEntity(saved);
     }

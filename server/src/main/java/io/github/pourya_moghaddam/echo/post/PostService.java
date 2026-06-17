@@ -5,7 +5,9 @@ import io.github.pourya_moghaddam.echo.community.CommunityRepository;
 import io.github.pourya_moghaddam.echo.exception.ResourceNotFoundException;
 import io.github.pourya_moghaddam.echo.post.dto.PostCreateRequest;
 import io.github.pourya_moghaddam.echo.post.dto.PostResponse;
+import io.github.pourya_moghaddam.echo.search.SearchService;
 import io.github.pourya_moghaddam.echo.user.User;
+import io.github.pourya_moghaddam.echo.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -22,7 +24,8 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final CommunityRepository communityRepository;
-    private final io.github.pourya_moghaddam.echo.user.UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final SearchService searchService;
 
     @Transactional
     public PostResponse createPost(String communityName, PostCreateRequest request, String authorUsername) {
@@ -38,6 +41,7 @@ public class PostService {
         post.setCommunity(community);
 
         Post savedPost = postRepository.save(post);
+        searchService.indexPost(savedPost);
         return mapToResponse(savedPost);
     }
 
@@ -56,11 +60,11 @@ public class PostService {
         var communityIds = user.getJoinedCommunities().stream()
                 .map(Community::getId)
                 .collect(Collectors.toList());
-        
+
         if (communityIds.isEmpty()) {
             return Page.empty(pageable);
         }
-        
+
         return postRepository.findByCommunityIdIn(communityIds, pageable)
                 .map(this::mapToResponse);
     }

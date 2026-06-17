@@ -13,11 +13,11 @@ public class TestcontainersConfiguration {
 
     @Bean
     @ServiceConnection
-    @Ssl
     ElasticsearchContainer elasticsearchContainer() {
-        return new ElasticsearchContainer(DockerImageName.parse("elasticsearch:8.12.2").asCompatibleSubstituteFor("docker.elastic.co/elasticsearch/elasticsearch"))
+        return new ElasticsearchContainer(DockerImageName.parse("elastic/elasticsearch:9.4.2").asCompatibleSubstituteFor("docker.elastic.co/elasticsearch/elasticsearch"))
                 .withEnv("xpack.security.enabled", "false")
-                .withEnv("ES_JAVA_OPTS", "-Xms256m -Xmx256m");
+                .withEnv("xpack.security.http.ssl.enabled", "false")
+                .withEnv("ES_JAVA_OPTS", "-Xms512m -Xmx512m");
     }
 
     @Bean

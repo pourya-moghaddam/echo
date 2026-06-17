@@ -4,6 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.pourya_moghaddam.echo.TestcontainersConfiguration;
 import io.github.pourya_moghaddam.echo.security.JwtService;
 import io.github.pourya_moghaddam.echo.user.dto.UpdateThemeRequest;
+import io.github.pourya_moghaddam.echo.community.CommunityRepository;
+import io.github.pourya_moghaddam.echo.post.PostRepository;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +33,10 @@ class UserControllerIntegrationTest {
 
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private CommunityRepository communityRepository;
+    @Autowired
+    private PostRepository postRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -39,10 +46,13 @@ class UserControllerIntegrationTest {
 
     private String validToken;
 
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
     @BeforeEach
     void setUp() {
         objectMapper = new ObjectMapper();
-        userRepository.deleteAll();
+        jdbcTemplate.execute("TRUNCATE TABLE posts, user_communities, communities, users RESTART IDENTITY CASCADE");
 
         User user = new User();
         user.setEmail("test@example.com");
@@ -96,5 +106,19 @@ class UserControllerIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isUnauthorized());
+    }
+
+    // --- PUT /api/users/avatar Tests ---
+
+    @Test
+    void updateAvatar_authenticated_returnsUpdatedAvatar() throws Exception {
+        io.github.pourya_moghaddam.echo.user.dto.UpdateAvatarRequest request = new io.github.pourya_moghaddam.echo.user.dto.UpdateAvatarRequest("new-avatar.png");
+
+        mockMvc.perform(put("/api/users/avatar")
+                        .header("Authorization", "Bearer " + validToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.avatarUrl").value("new-avatar.png"));
     }
 }

@@ -32,9 +32,9 @@ public class User {
 
     @ManyToMany
     @JoinTable(
-        name = "user_communities",
-        joinColumns = @JoinColumn(name = "user_id"),
-        inverseJoinColumns = @JoinColumn(name = "community_id")
+            name = "user_communities",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "community_id")
     )
     private java.util.Set<Community> joinedCommunities = new java.util.HashSet<>();
 

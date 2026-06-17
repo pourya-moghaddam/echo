@@ -64,7 +64,7 @@ class AuthServiceTest {
             user.setId(1L);
             return user;
         });
-        when(jwtService.generateToken("testuser")).thenReturn("jwt-token");
+        when(jwtService.generateToken("TestUser")).thenReturn("jwt-token");
 
         AuthResponse response = authService.signup(request);
 

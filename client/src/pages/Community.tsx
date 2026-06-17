@@ -42,7 +42,7 @@ export default function Community() {
           {data.pages.map((page, i) => (
             <div key={i} className="flex flex-col gap-4">
               {page.content.map((post) => (
-                <PostCard key={post.id} post={{...post, id: String(post.id)}} onVote={handleVote} />
+                <PostCard key={post.id} post={{...post, id: String(post.id)}} onVote={handleVote} hideCommunity={true} />
               ))}
             </div>
           ))}

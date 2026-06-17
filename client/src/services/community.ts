@@ -28,4 +28,9 @@ export const communityService = {
     const res = await api.get('/users/me/communities');
     return res.data;
   },
+
+  createCommunity: async (data: { name: string; description: string; category: string }): Promise<Community> => {
+    const res = await api.post('/communities', data);
+    return res.data;
+  },
 };

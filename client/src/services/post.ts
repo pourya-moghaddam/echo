@@ -37,5 +37,11 @@ export const postService = {
 
   votePost: async (postId: number, direction: 'UP' | 'DOWN' | 'NONE'): Promise<void> => {
     await api.post(`/posts/${postId}/vote`, { direction });
+  },
+
+  createPost: async (data: { title: string; content: string; communityName: string }): Promise<Post> => {
+    const { communityName, ...requestData } = data;
+    const res = await api.post(`/communities/${communityName}/posts`, requestData);
+    return res.data;
   }
 };

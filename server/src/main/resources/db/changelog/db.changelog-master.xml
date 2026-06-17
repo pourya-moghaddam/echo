@@ -10,5 +10,6 @@
     <include file="db/changelog/03-create-user-communities-table.xml"/>
     <include file="db/changelog/04-create-posts-table.xml"/>
     <include file="db/changelog/05-create-comments-table.xml"/>
+    <include file="db/changelog/06-create-votes-tables.xml"/>
 
 </databaseChangeLog>

@@ -8,5 +8,9 @@ export const userService = {
   updateAvatar: async (avatarUrl: string) => {
     const response = await api.put('/users/avatar', { avatarUrl })
     return response.data
+  },
+  getUserProfile: async (username: string) => {
+    const response = await api.get(`/users/${username}`)
+    return response.data
   }
 }

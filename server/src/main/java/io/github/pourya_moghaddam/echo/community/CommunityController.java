@@ -27,6 +27,11 @@ public class CommunityController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    @GetMapping
+    public ResponseEntity<java.util.List<CommunityResponse>> getAllCommunities() {
+        return ResponseEntity.ok(communityService.getAllCommunities());
+    }
+
     @GetMapping("/{name}")
     public ResponseEntity<CommunityResponse> getCommunity(@PathVariable String name) {
         CommunityResponse response = communityService.getCommunityByName(name);

@@ -76,6 +76,12 @@ public class CommentService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
+    public org.springframework.data.domain.Page<CommentResponse> getCommentsByAuthor(String username, int page, int size, String currentUsername) {
+        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(page, size, org.springframework.data.domain.Sort.by(org.springframework.data.domain.Sort.Direction.DESC, "createdAt"));
+        return commentRepository.findByAuthorUsernameIgnoreCase(username, pageable).map(c -> mapToResponse(c, currentUsername));
+    }
+
     private CommentResponse mapToResponse(Comment comment, String currentUsername) {
         CommentResponse response = CommentResponse.builder()
                 .id(comment.getId())
@@ -83,6 +89,8 @@ public class CommentService {
                 .authorUsername(comment.getAuthor().getUsername())
                 .authorAvatar(comment.getAuthor().getAvatarUrl())
                 .postId(comment.getPost().getId())
+                .postTitle(comment.getPost().getTitle())
+                .communityName(comment.getPost().getCommunity().getName())
                 .score(comment.getScore())
                 .createdAt(comment.getCreatedAt())
                 .replies(List.of())
@@ -109,6 +117,8 @@ public class CommentService {
                 .authorUsername(comment.getAuthor().getUsername())
                 .authorAvatar(comment.getAuthor().getAvatarUrl())
                 .postId(comment.getPost().getId())
+                .postTitle(comment.getPost().getTitle())
+                .communityName(comment.getPost().getCommunity().getName())
                 .score(comment.getScore())
                 .createdAt(comment.getCreatedAt())
                 .replies(replies)

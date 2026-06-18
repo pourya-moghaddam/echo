@@ -82,7 +82,13 @@ export function CommentCard({ comment }: { comment: CommentProps }) {
     <div className={`relative flex flex-col ${comment.isRoot ? "pt-4" : "pt-2"} w-full`}>
       {/* Thread Line connecting replies */}
       {showReplies && (
-        <div className="absolute left-4 top-10 bottom-0 w-0.5 bg-border/50 hover:bg-border cursor-pointer transition-colors" onClick={() => setShowReplies(false)} title="Collapse replies" />
+        <div 
+          className="absolute left-2 top-10 bottom-0 w-4 flex justify-center cursor-pointer group" 
+          onClick={() => setShowReplies(false)} 
+          title="Collapse replies"
+        >
+          <div className="w-0.5 h-full bg-border group-hover:bg-foreground transition-colors" />
+        </div>
       )}
 
       <div className="flex gap-2">
@@ -109,9 +115,6 @@ export function CommentCard({ comment }: { comment: CommentProps }) {
               <MessageSquare className="h-4 w-4" />
               <span className="text-xs font-medium">Reply</span>
             </Button>
-            <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-muted-foreground">
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
           </div>
 
           {isReplying && (
@@ -124,8 +127,8 @@ export function CommentCard({ comment }: { comment: CommentProps }) {
                 rows={1}
               />
               <div className="flex justify-end gap-2">
-                <Button variant="ghost" size="sm" onClick={() => setIsReplying(false)}>Cancel</Button>
-                <Button size="sm" onClick={() => submitReply.mutate()} disabled={!replyContent.trim() || submitReply.isPending}>
+                <Button variant="ghost" size="sm" className="rounded-full" onClick={() => setIsReplying(false)}>Cancel</Button>
+                <Button size="sm" className="rounded-full" onClick={() => submitReply.mutate()} disabled={!replyContent.trim() || submitReply.isPending}>
                   {submitReply.isPending ? 'Replying...' : 'Reply'}
                 </Button>
               </div>

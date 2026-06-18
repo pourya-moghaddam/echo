@@ -79,6 +79,12 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
+    public Page<PostResponse> getPostsByAuthor(String username, int page, int size, String currentUsername) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "score", "createdAt"));
+        return postRepository.findByAuthorUsernameIgnoreCase(username, pageable).map(p -> mapToResponse(p, currentUsername));
+    }
+
+    @Transactional(readOnly = true)
     public PostResponse getPost(Long id, String currentUsername) {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Post not found"));

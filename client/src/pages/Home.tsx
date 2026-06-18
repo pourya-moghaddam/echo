@@ -22,7 +22,7 @@ export default function Home() {
     enabled: !!currentUser, // Only fetch feed if logged in
   })
 
-  const handleVote = async (id: string, dir: 'up' | 'down') => {
+  const handleVote = async (id: string, dir: 'up' | 'down' | 'none') => {
     // Optimistic UI updates should be handled here or via react-query mutation in Phase 8
     // For now we just call the API
     try {

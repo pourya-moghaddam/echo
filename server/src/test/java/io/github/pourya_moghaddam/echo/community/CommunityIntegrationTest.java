@@ -201,4 +201,27 @@ class CommunityIntegrationTest {
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$[0].name").value("movies"));
     }
+
+    @Test
+    void getAllCommunities_returnsAllCommunities() throws Exception {
+        CreateCommunityRequest request1 =
+                new CreateCommunityRequest("tech", "Tech lovers", CommunityCategory.PROGRAMMING);
+        mockMvc.perform(post("/api/communities")
+                        .header("Authorization", "Bearer " + userToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request1)))
+                .andExpect(status().isCreated());
+
+        CreateCommunityRequest request2 =
+                new CreateCommunityRequest("sports", "Sports lovers", CommunityCategory.SPORTS);
+        mockMvc.perform(post("/api/communities")
+                        .header("Authorization", "Bearer " + userToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request2)))
+                .andExpect(status().isCreated());
+
+        mockMvc.perform(get("/api/communities"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(2)));
+    }
 }

@@ -65,6 +65,16 @@ public class PostController {
         return ResponseEntity.ok(postService.getPost(postId, username));
     }
 
+    @GetMapping("/users/{username}/posts")
+    public ResponseEntity<Page<PostResponse>> getUserPosts(
+            @PathVariable String username,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        String currentUsername = userDetails != null ? userDetails.getUsername() : null;
+        return ResponseEntity.ok(postService.getPostsByAuthor(username, page, size, currentUsername));
+    }
+
     @PostMapping("/posts/{postId}/vote")
     public ResponseEntity<Void> votePost(@PathVariable Long postId,
                                          @Valid @RequestBody VoteRequest request,

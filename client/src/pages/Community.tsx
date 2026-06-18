@@ -21,7 +21,7 @@ export default function Community() {
     enabled: !!community,
   })
 
-  const handleVote = async (id: string, dir: 'up' | 'down') => {
+  const handleVote = async (id: string, dir: 'up' | 'down' | 'none') => {
     try {
       await postService.votePost(Number(id), dir.toUpperCase() as any)
     } catch (e) {

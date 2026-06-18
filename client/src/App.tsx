@@ -10,6 +10,9 @@ import CreatePost from "./pages/CreatePost"
 
 import PostDetails from "./pages/PostDetails"
 import Search from "./pages/Search"
+import Explore from "./pages/Explore"
+import UserProfile from "./pages/UserProfile"
+import { Toaster } from "@/components/ui/sonner"
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -34,9 +37,12 @@ export default function App() {
                 <Route path="submit" element={<CreatePost />} />
                 <Route path="post/:postId" element={<PostDetails />} />
                 <Route path="search" element={<Search />} />
+                <Route path="explore" element={<Explore />} />
+                <Route path="u/:username" element={<UserProfile />} />
               </Route>
             </Routes>
           </BrowserRouter>
+          <Toaster position="bottom-center" />
         </TooltipProvider>
       </ThemeProvider>
     </QueryClientProvider>

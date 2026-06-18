@@ -26,6 +26,12 @@ public class UserService {
         return UserResponse.fromEntity(user);
     }
 
+    public UserResponse getUserProfile(String username) {
+        User user = userRepository.findByUsernameIgnoreCase(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found: " + username));
+        return UserResponse.fromEntity(user);
+    }
+
     public UserResponse updateTheme(String username, UpdateThemeRequest request) {
         User user = userRepository.findByUsernameIgnoreCase(username)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found: " + username));

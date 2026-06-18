@@ -28,6 +28,12 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/{username}")
+    public ResponseEntity<UserResponse> getUserProfile(@PathVariable String username) {
+        UserResponse response = userService.getUserProfile(username);
+        return ResponseEntity.ok(response);
+    }
+
     @PutMapping("/theme")
     public ResponseEntity<UserResponse> updateTheme(
             @AuthenticationPrincipal UserDetails userDetails,

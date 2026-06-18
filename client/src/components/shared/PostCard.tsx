@@ -24,11 +24,11 @@ export interface PostProps {
   userVote?: 'up' | 'down' | null
 }
 
-export function PostCard({ post, onVote, hideCommunity }: { post: PostProps, onVote?: (id: string, dir: 'up' | 'down') => void, hideCommunity?: boolean }) {
+export function PostCard({ post, onVote, hideCommunity, isDetail }: { post: PostProps, onVote?: (id: string, dir: 'up' | 'down') => void, hideCommunity?: boolean, isDetail?: boolean }) {
   const dateStr = formatTimeAgo(post.createdAt)
 
   return (
-    <Card className="flex flex-row gap-0 py-0 overflow-hidden transition-colors bg-background ring-0 border border-border/40 shadow-none hover:bg-card group cursor-pointer">
+    <Card className={`flex flex-row gap-0 py-0 overflow-hidden transition-colors bg-background ring-0 border border-border/40 shadow-none ${!isDetail ? 'hover:bg-card cursor-pointer' : ''} group`}>
       {/* Vote Sidebar */}
       <div className="bg-muted/30 px-2 py-3 w-12 flex flex-col items-center shrink-0 border-r border-border/50">
         <VoteWidget score={post.score} userVote={post.userVote} onVote={(dir) => onVote?.(String(post.id), dir)} />
@@ -56,14 +56,25 @@ export function PostCard({ post, onVote, hideCommunity }: { post: PostProps, onV
         </div>
 
         {/* Title & Content */}
-        <Link to={`/post/${post.id}`} className="block mb-2">
-          <h2 className="text-lg font-semibold text-foreground mb-1 leading-snug">{post.title}</h2>
-          {post.content && (
-            <p className="text-sm text-muted-foreground line-clamp-3">
-              {post.content}
-            </p>
-          )}
-        </Link>
+        {isDetail ? (
+          <div className="block mb-2 mt-1">
+            <h1 className="text-xl font-bold text-foreground mb-3 leading-snug">{post.title}</h1>
+            {post.content && (
+              <p className="text-sm text-foreground whitespace-pre-wrap leading-relaxed">
+                {post.content}
+              </p>
+            )}
+          </div>
+        ) : (
+          <Link to={`/post/${post.id}`} className="block mb-2">
+            <h2 className="text-lg font-semibold text-foreground mb-1 leading-snug">{post.title}</h2>
+            {post.content && (
+              <p className="text-sm text-muted-foreground line-clamp-3">
+                {post.content}
+              </p>
+            )}
+          </Link>
+        )}
 
         {/* Footer Actions */}
         <div className="flex items-center gap-1 mt-2 -ml-2">

@@ -75,6 +75,13 @@ public class PostService {
         return postRepository.findAll(pageable).map(this::mapToResponse);
     }
 
+    @Transactional(readOnly = true)
+    public PostResponse getPost(Long id) {
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
+        return mapToResponse(post);
+    }
+
     private PostResponse mapToResponse(Post post) {
         PostResponse response = new PostResponse();
         response.setId(post.getId());

@@ -8,6 +8,8 @@ import Popular from "./pages/Popular"
 import Community from "./pages/Community"
 import CreatePost from "./pages/CreatePost"
 
+import PostDetails from "./pages/PostDetails"
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -29,6 +31,7 @@ export default function App() {
                 <Route path="popular" element={<Popular />} />
                 <Route path="c/:community" element={<Community />} />
                 <Route path="submit" element={<CreatePost />} />
+                <Route path="post/:postId" element={<PostDetails />} />
                 <Route path="search" element={<div>Search Results Placeholder</div>} />
               </Route>
             </Routes>

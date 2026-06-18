@@ -53,6 +53,11 @@ public class PostController {
         return ResponseEntity.ok(postService.getPopularPosts(page, size));
     }
 
+    @GetMapping("/posts/{postId}")
+    public ResponseEntity<PostResponse> getPost(@PathVariable Long postId) {
+        return ResponseEntity.ok(postService.getPost(postId));
+    }
+
     @PostMapping("/posts/{postId}/vote")
     public ResponseEntity<Void> votePost(@PathVariable Long postId,
                                          @Valid @RequestBody VoteRequest request,

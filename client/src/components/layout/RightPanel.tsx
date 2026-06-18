@@ -2,6 +2,7 @@ import { useLocation } from "react-router-dom"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { Button } from "@/components/ui/button"
 import { communityService } from "@/services/community"
+import { postService } from "@/services/post"
 import { useStore } from "@/store/useStore"
 
 export default function RightPanel() {
@@ -10,12 +11,22 @@ export default function RightPanel() {
   const queryClient = useQueryClient()
 
   const isCommunityPage = location.pathname.startsWith('/c/')
-  const communityName = isCommunityPage ? location.pathname.split('/')[2] : ''
+  const isPostPage = location.pathname.startsWith('/post/')
+  const postId = isPostPage ? Number(location.pathname.split('/')[2]) : null
+
+  const { data: post } = useQuery({
+    queryKey: ['post', postId],
+    queryFn: () => postService.getPost(postId!),
+    enabled: !!postId && !isNaN(postId),
+  })
+
+  const urlCommunityName = isCommunityPage ? location.pathname.split('/')[2] : ''
+  const communityName = isCommunityPage ? urlCommunityName : (isPostPage && post ? post.communityName : '')
 
   const { data: community, isLoading } = useQuery({
     queryKey: ['community', communityName],
     queryFn: () => communityService.getCommunity(communityName),
-    enabled: !!communityName && isCommunityPage,
+    enabled: !!communityName,
   })
 
   const { data: joinedCommunities } = useQuery({
@@ -40,8 +51,8 @@ export default function RightPanel() {
     }
   })
 
-  // Only show the right panel on community pages
-  if (!isCommunityPage) {
+  // Only show the right panel on community or post pages (if we know the community)
+  if (!isCommunityPage && (!isPostPage || !communityName)) {
     return <aside className="hidden w-80 lg:block shrink-0"></aside>
   }
 

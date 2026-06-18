@@ -36,10 +36,10 @@ public class SearchService {
     }
 
     public List<CommunityDocument> searchCommunities(String query) {
-        return communitySearchRepository.findByNameMatchesOrDescriptionMatches(query, query);
+        return communitySearchRepository.search(query);
     }
 
     public List<PostDocument> searchPosts(String query) {
-        return postSearchRepository.findByTitleMatchesOrContentMatches(query, query);
+        return postSearchRepository.search(query);
     }
 }

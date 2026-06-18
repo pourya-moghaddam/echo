@@ -9,6 +9,7 @@ import Community from "./pages/Community"
 import CreatePost from "./pages/CreatePost"
 
 import PostDetails from "./pages/PostDetails"
+import Search from "./pages/Search"
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -32,7 +33,7 @@ export default function App() {
                 <Route path="c/:community" element={<Community />} />
                 <Route path="submit" element={<CreatePost />} />
                 <Route path="post/:postId" element={<PostDetails />} />
-                <Route path="search" element={<div>Search Results Placeholder</div>} />
+                <Route path="search" element={<Search />} />
               </Route>
             </Routes>
           </BrowserRouter>

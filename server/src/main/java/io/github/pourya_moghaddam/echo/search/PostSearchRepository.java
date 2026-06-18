@@ -5,7 +5,10 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+import org.springframework.data.elasticsearch.annotations.Query;
+
 @Repository
 public interface PostSearchRepository extends ElasticsearchRepository<PostDocument, String> {
-    List<PostDocument> findByTitleMatchesOrContentMatches(String title, String content);
+    @Query("{\"multi_match\": {\"query\": \"?0\", \"fields\": [\"title\", \"content\"], \"type\": \"phrase_prefix\"}}")
+    List<PostDocument> search(String query);
 }

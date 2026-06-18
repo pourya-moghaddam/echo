@@ -1,7 +1,7 @@
 import { Link, useLocation } from "react-router-dom"
-import { Search, Plus } from "lucide-react"
+import { Plus } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import { SearchBar } from "./SearchBar"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useStore } from "@/store/useStore"
 import { authService } from "@/services/auth"
@@ -38,14 +38,7 @@ export default function Navbar() {
 
         {/* Search Bar */}
         <div className="flex flex-1 items-center justify-center px-6">
-          <div className="relative w-full max-w-md">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input
-              type="search"
-              placeholder="Search Echo..."
-              className="w-full bg-secondary dark:bg-secondary border-transparent hover:bg-secondary/80 dark:hover:bg-secondary/80 focus-visible:bg-background dark:focus-visible:bg-background focus-visible:border-ring pl-9 pr-4 md:w-[400px] transition-colors"
-            />
-          </div>
+          <SearchBar />
         </div>
 
         {/* Right Actions */}

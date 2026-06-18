@@ -1,5 +1,6 @@
+import { useState } from "react"
 import { Link, useLocation } from "react-router-dom"
-import { Plus } from "lucide-react"
+import { Plus, Sun, Moon, Monitor } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { SearchBar } from "./SearchBar"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -16,18 +17,32 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 
 export default function Navbar() {
   const { currentUser, logout, setAuthModalOpen } = useStore()
   const { theme, setTheme } = useTheme()
   const location = useLocation()
   const queryClient = useQueryClient()
+  const [isThemeExpanded, setIsThemeExpanded] = useState(false)
+  const [isAvatarModalOpen, setIsAvatarModalOpen] = useState(false)
+  const [avatarInput, setAvatarInput] = useState("")
   
   const communityMatch = location.pathname.match(/^\/c\/([^\/]+)/)
   const currentCommunity = communityMatch ? communityMatch[1] : ''
 
   return (
-    <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <>
+      <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto flex h-14 items-center justify-between px-4 md:px-8">
         {/* Logo */}
         <div className="flex items-center gap-2">
@@ -73,29 +88,89 @@ export default function Navbar() {
                     </div>
                   </div>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={async () => {
-                    const nextTheme = theme === 'dark' ? 'light' : theme === 'light' ? 'system' : 'dark'
-                    setTheme(nextTheme)
-                    if (currentUser) {
-                      try {
-                        const updatedUser = await userService.updateTheme(nextTheme.toUpperCase() as any)
-                        useStore.setState({ currentUser: updatedUser })
-                      } catch (e) { console.error('Failed to sync theme', e) }
-                    }
-                  }}>
-                    Theme: {theme.charAt(0).toUpperCase() + theme.slice(1)}
+                  <DropdownMenuItem asChild>
+                    <Link to={`/u/${currentUser.username}`} className="w-full cursor-pointer">
+                      Profile
+                    </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={async () => {
-                    const url = window.prompt("Enter new avatar URL:", currentUser.avatarUrl)
-                    if (url) {
-                      try {
-                        const updatedUser = await userService.updateAvatar(url)
-                        useStore.setState({ currentUser: updatedUser })
-                      } catch (e) { console.error('Failed to update avatar', e) }
-                    }
+                  <DropdownMenuItem onClick={() => {
+                    setAvatarInput(currentUser.avatarUrl || "")
+                    setIsAvatarModalOpen(true)
                   }}>
                     Change Avatar
                   </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <div 
+                    className="relative flex items-center justify-between px-2 h-9 overflow-hidden cursor-pointer rounded-sm hover:bg-accent hover:text-accent-foreground transition-colors group"
+                    onClick={() => setIsThemeExpanded(true)}
+                    onMouseEnter={() => setIsThemeExpanded(true)}
+                    onMouseLeave={() => setIsThemeExpanded(false)}
+                  >
+                    <span className={`text-sm transition-all duration-300 ${isThemeExpanded ? '-translate-x-full opacity-0' : 'translate-x-0 opacity-100'}`}>
+                      Theme
+                    </span>
+                    
+                    <div className={`absolute right-2 flex items-center text-muted-foreground transition-all duration-300 ${isThemeExpanded ? 'translate-x-full opacity-0' : 'translate-x-0 opacity-100'}`}>
+                      {theme === 'light' ? <Sun className="h-4 w-4" /> : theme === 'dark' ? <Moon className="h-4 w-4" /> : <Monitor className="h-4 w-4" />}
+                    </div>
+
+                    <div className={`absolute right-1 flex items-center gap-1 rounded-full border bg-background p-0.5 transition-all duration-300 ${isThemeExpanded ? 'translate-x-0 opacity-100 visible' : 'translate-x-4 opacity-0 invisible pointer-events-none'}`}>
+                      <Button
+                        variant={theme === 'light' ? 'secondary' : 'ghost'}
+                        size="icon"
+                        className={`h-6 w-6 rounded-full ${theme === 'light' ? 'shadow-sm' : ''}`}
+                        onClick={async (e) => {
+                          e.stopPropagation()
+                          setTheme('light')
+                          if (currentUser) {
+                            try {
+                              const updatedUser = await userService.updateTheme('LIGHT')
+                              useStore.setState({ currentUser: updatedUser })
+                            } catch (err) { console.error('Failed to sync theme', err) }
+                          }
+                        }}
+                      >
+                        <Sun className="h-3 w-3" />
+                        <span className="sr-only">Light</span>
+                      </Button>
+                      <Button
+                        variant={theme === 'dark' ? 'secondary' : 'ghost'}
+                        size="icon"
+                        className={`h-6 w-6 rounded-full ${theme === 'dark' ? 'shadow-sm' : ''}`}
+                        onClick={async (e) => {
+                          e.stopPropagation()
+                          setTheme('dark')
+                          if (currentUser) {
+                            try {
+                              const updatedUser = await userService.updateTheme('DARK')
+                              useStore.setState({ currentUser: updatedUser })
+                            } catch (err) { console.error('Failed to sync theme', err) }
+                          }
+                        }}
+                      >
+                        <Moon className="h-3 w-3" />
+                        <span className="sr-only">Dark</span>
+                      </Button>
+                      <Button
+                        variant={theme === 'system' ? 'secondary' : 'ghost'}
+                        size="icon"
+                        className={`h-6 w-6 rounded-full ${theme === 'system' ? 'shadow-sm' : ''}`}
+                        onClick={async (e) => {
+                          e.stopPropagation()
+                          setTheme('system')
+                          if (currentUser) {
+                            try {
+                              const updatedUser = await userService.updateTheme('SYSTEM')
+                              useStore.setState({ currentUser: updatedUser })
+                            } catch (err) { console.error('Failed to sync theme', err) }
+                          }
+                        }}
+                      >
+                        <Monitor className="h-3 w-3" />
+                        <span className="sr-only">System</span>
+                      </Button>
+                    </div>
+                  </div>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={async () => {
                     try {
@@ -121,5 +196,44 @@ export default function Navbar() {
         </div>
       </div>
     </nav>
+      {/* Avatar Modal */}
+      <Dialog open={isAvatarModalOpen} onOpenChange={setIsAvatarModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Change Avatar</DialogTitle>
+            <DialogDescription>
+              Enter a new URL for your avatar image.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid gap-2">
+              <Label htmlFor="avatarUrl">Avatar URL</Label>
+              <Input
+                id="avatarUrl"
+                placeholder="https://example.com/avatar.jpg"
+                value={avatarInput}
+                onChange={(e) => setAvatarInput(e.target.value)}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsAvatarModalOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={async () => {
+              try {
+                const updatedUser = await userService.updateAvatar(avatarInput)
+                useStore.setState({ currentUser: updatedUser })
+                setIsAvatarModalOpen(false)
+              } catch (e) {
+                console.error('Failed to update avatar', e)
+              }
+            }}>
+              Save changes
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   )
 }

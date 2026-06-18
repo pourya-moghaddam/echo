@@ -14,6 +14,8 @@ public class CommentResponse {
     private String authorUsername;
     private String authorAvatar;
     private Long postId;
+    private String postTitle;
+    private String communityName;
     private Integer score;
     private String userVote; // "up", "down", or null
     private LocalDateTime createdAt;

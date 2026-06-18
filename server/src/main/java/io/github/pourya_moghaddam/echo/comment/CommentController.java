@@ -46,6 +46,16 @@ public class CommentController {
         return commentService.getPostComments(postId, username);
     }
 
+    @GetMapping("/users/{username}/comments")
+    public org.springframework.data.domain.Page<CommentResponse> getUserComments(
+            @PathVariable String username,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        String currentUsername = userDetails != null ? userDetails.getUsername() : null;
+        return commentService.getCommentsByAuthor(username, page, size, currentUsername);
+    }
+
     @PostMapping("/comments/{commentId}/vote")
     public ResponseEntity<Void> voteComment(@PathVariable Long commentId,
                                             @Valid @RequestBody VoteRequest request,

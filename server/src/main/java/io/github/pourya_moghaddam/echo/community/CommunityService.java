@@ -55,6 +55,13 @@ public class CommunityService {
         return CommunityResponse.fromEntity(community);
     }
 
+    @Transactional(readOnly = true)
+    public java.util.List<CommunityResponse> getAllCommunities() {
+        return communityRepository.findAll().stream()
+                .map(CommunityResponse::fromEntity)
+                .toList();
+    }
+
     @Transactional
     public void joinCommunity(String name, String username) {
         Community community = communityRepository.findByNameIgnoreCase(name)

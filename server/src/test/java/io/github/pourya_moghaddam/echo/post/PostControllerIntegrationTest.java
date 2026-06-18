@@ -189,6 +189,36 @@ class PostControllerIntegrationTest {
     }
 
     @Test
+    void getUserPosts_returnsPaginatedPostsByAuthor() throws Exception {
+        PostCreateRequest request1 = new PostCreateRequest();
+        request1.setTitle("User1 Post 1");
+        mockMvc.perform(post("/api/communities/java/posts")
+                .header("Authorization", "Bearer " + userToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request1)));
+
+        PostCreateRequest request2 = new PostCreateRequest();
+        request2.setTitle("User1 Post 2");
+        mockMvc.perform(post("/api/communities/java/posts")
+                .header("Authorization", "Bearer " + userToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request2)));
+
+        PostCreateRequest request3 = new PostCreateRequest();
+        request3.setTitle("User2 Post 1");
+        mockMvc.perform(post("/api/communities/java/posts")
+                .header("Authorization", "Bearer " + user2Token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request3)));
+
+        mockMvc.perform(get("/api/users/user1/posts"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.content", hasSize(2)))
+            .andExpect(jsonPath("$.content[0].authorUsername").value("user1"))
+            .andExpect(jsonPath("$.content[1].authorUsername").value("user1"));
+    }
+
+    @Test
     void getPost_existingId_returnsPost() throws Exception {
         PostCreateRequest request = new PostCreateRequest();
         request.setTitle("Specific Post");

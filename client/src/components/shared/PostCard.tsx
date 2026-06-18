@@ -1,17 +1,12 @@
 import { useState, useEffect } from "react"
 import { Link } from "react-router-dom"
-import { MessageSquare, Share2, MoreHorizontal } from "lucide-react"
+import { MessageSquare, Share2 } from "lucide-react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { VoteWidget } from "./VoteWidget"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 import { postService } from "@/services/post"
 import { formatTimeAgo } from "@/lib/utils"
+import { toast } from "sonner"
 
 export interface PostProps {
   id: string | number
@@ -25,7 +20,7 @@ export interface PostProps {
   userVote?: 'up' | 'down' | null
 }
 
-export function PostCard({ post, onVote, hideCommunity, isDetail }: { post: PostProps, onVote?: (id: string, dir: 'up' | 'down') => void, hideCommunity?: boolean, isDetail?: boolean }) {
+export function PostCard({ post, onVote, hideCommunity, isDetail }: { post: PostProps, onVote?: (id: string, dir: 'up' | 'down' | 'none') => void, hideCommunity?: boolean, isDetail?: boolean }) {
   const dateStr = formatTimeAgo(post.createdAt)
   
   const [localScore, setLocalScore] = useState(post.score)
@@ -56,7 +51,7 @@ export function PostCard({ post, onVote, hideCommunity, isDetail }: { post: Post
 
     try {
       if (onVote) {
-        onVote(String(post.id), dir)
+        onVote(String(post.id), newVote || 'none')
       } else {
         const apiDir = newVote ? newVote.toUpperCase() as 'UP'|'DOWN' : 'NONE'
         await postService.votePost(Number(post.id), apiDir)
@@ -65,6 +60,15 @@ export function PostCard({ post, onVote, hideCommunity, isDetail }: { post: Post
       setLocalVote(localVote)
       setLocalScore(localScore)
     }
+  }
+
+  const handleShare = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    const url = `${window.location.origin}/post/${post.id}`
+    navigator.clipboard.writeText(url).then(() => {
+      toast("Link is copied to clipboard")
+    })
   }
 
   return (
@@ -122,22 +126,10 @@ export function PostCard({ post, onVote, hideCommunity, isDetail }: { post: Post
             <MessageSquare className="h-4 w-4" />
             <span className="text-xs font-medium">{post.commentCount} Comments</span>
           </Button>
-          <Button variant="ghost" size="sm" className="h-8 gap-1.5 text-muted-foreground hover:bg-muted/50">
+          <Button variant="ghost" size="sm" className="h-8 gap-1.5 text-muted-foreground hover:bg-muted/50" onClick={handleShare}>
             <Share2 className="h-4 w-4" />
             <span className="text-xs font-medium">Share</span>
           </Button>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-muted-foreground hover:bg-muted/50 ml-auto md:ml-0">
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start">
-              <DropdownMenuItem>Save</DropdownMenuItem>
-              <DropdownMenuItem>Hide</DropdownMenuItem>
-              <DropdownMenuItem className="text-destructive">Report</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
         </div>
       </div>
     </Card>

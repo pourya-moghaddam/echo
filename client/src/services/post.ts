@@ -67,5 +67,15 @@ export const postService = {
 
   voteComment: async (commentId: number | string, direction: 'UP' | 'DOWN' | 'NONE'): Promise<void> => {
     await api.post(`/comments/${commentId}/vote`, { direction });
+  },
+
+  getUserPosts: async (username: string, page = 0, size = 10): Promise<PageResponse<Post>> => {
+    const res = await api.get(`/users/${username}/posts`, { params: { page, size } });
+    return res.data;
+  },
+
+  getUserComments: async (username: string, page = 0, size = 10): Promise<PageResponse<any>> => {
+    const res = await api.get(`/users/${username}/comments`, { params: { page, size } });
+    return res.data;
   }
 };

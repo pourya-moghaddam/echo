@@ -84,6 +84,22 @@ class UserControllerIntegrationTest {
                 .andExpect(status().isUnauthorized());
     }
 
+    // --- GET /api/users/{username} Tests ---
+
+    @Test
+    void getUserProfile_existingUser_returnsUserData() throws Exception {
+        mockMvc.perform(get("/api/users/testuser"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.username").value("testuser"))
+                .andExpect(jsonPath("$.avatarUrl").value("avatar1.png"));
+    }
+
+    @Test
+    void getUserProfile_nonExistingUser_returnsNotFound() throws Exception {
+        mockMvc.perform(get("/api/users/nonexisting"))
+                .andExpect(status().isNotFound());
+    }
+
     // --- PUT /api/users/theme Tests ---
 
     @Test

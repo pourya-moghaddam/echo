@@ -10,4 +10,6 @@ import java.util.List;
 public interface CommentRepository extends JpaRepository<Comment, Long> {
     @Query("SELECT c FROM Comment c LEFT JOIN FETCH c.author WHERE c.post.id = :postId ORDER BY c.createdAt DESC")
     List<Comment> findAllByPostIdWithAuthor(@org.springframework.data.repository.query.Param("postId") Long postId);
+
+    org.springframework.data.domain.Page<Comment> findByAuthorUsernameIgnoreCase(String username, org.springframework.data.domain.Pageable pageable);
 }

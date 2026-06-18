@@ -12,4 +12,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     Page<Post> findByCommunityName(String name, Pageable pageable);
 
     Page<Post> findByCommunityIdIn(Collection<Long> communityIds, Pageable pageable);
+
+    Page<Post> findByAuthorUsernameIgnoreCase(String username, Pageable pageable);
 }

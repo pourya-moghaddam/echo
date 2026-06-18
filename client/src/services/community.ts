@@ -11,6 +11,11 @@ export interface Community {
 }
 
 export const communityService = {
+  getAllCommunities: async (): Promise<Community[]> => {
+    const res = await api.get('/communities');
+    return res.data;
+  },
+
   getCommunity: async (name: string): Promise<Community> => {
     const res = await api.get(`/communities/${name}`);
     return res.data;

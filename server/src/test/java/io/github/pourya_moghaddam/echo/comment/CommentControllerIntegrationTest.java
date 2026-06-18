@@ -105,7 +105,9 @@ class CommentControllerIntegrationTest {
             .andExpect(status().isCreated())
             .andExpect(jsonPath("$.content").value("First comment!"))
             .andExpect(jsonPath("$.authorUsername").value("user1"))
-            .andExpect(jsonPath("$.postId").value(testPostId));
+            .andExpect(jsonPath("$.postId").value(testPostId))
+            .andExpect(jsonPath("$.postTitle").value("Test Post"))
+            .andExpect(jsonPath("$.communityName").value("java"));
     }
 
     @Test
@@ -198,5 +200,28 @@ class CommentControllerIntegrationTest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$[0].id").value(commentId))
             .andExpect(jsonPath("$[0].userVote").value("down"));
+    }
+
+    @Test
+    void getUserComments_returnsPaginatedCommentsByAuthor() throws Exception {
+        CommentCreateRequest req1 = new CommentCreateRequest();
+        req1.setContent("User1 Comment 1");
+        mockMvc.perform(post("/api/posts/" + testPostId + "/comments")
+                .header("Authorization", "Bearer " + userToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(req1)));
+
+        CommentCreateRequest req2 = new CommentCreateRequest();
+        req2.setContent("User1 Comment 2");
+        mockMvc.perform(post("/api/posts/" + testPostId + "/comments")
+                .header("Authorization", "Bearer " + userToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(req2)));
+
+        mockMvc.perform(get("/api/users/user1/comments"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.content", hasSize(2)))
+            .andExpect(jsonPath("$.content[0].authorUsername").value("user1"))
+            .andExpect(jsonPath("$.content[1].authorUsername").value("user1"));
     }
 }

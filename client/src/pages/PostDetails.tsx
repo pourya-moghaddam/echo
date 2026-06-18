@@ -27,7 +27,7 @@ export default function PostDetails() {
     enabled: !!id && !isNaN(id),
   })
 
-  const handleVote = async (voteId: string, dir: 'up' | 'down') => {
+  const handleVote = async (voteId: string, dir: 'up' | 'down' | 'none') => {
     try {
       await postService.votePost(Number(voteId), dir.toUpperCase() as any)
       queryClient.invalidateQueries({ queryKey: ['post', id] })

@@ -63,5 +63,9 @@ export const postService = {
   replyToComment: async (commentId: number | string, content: string): Promise<any> => {
     const res = await api.post(`/comments/${commentId}/reply`, { content });
     return res.data;
+  },
+
+  voteComment: async (commentId: number | string, direction: 'UP' | 'DOWN' | 'NONE'): Promise<void> => {
+    await api.post(`/comments/${commentId}/vote`, { direction });
   }
 };

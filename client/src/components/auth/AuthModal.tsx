@@ -7,10 +7,12 @@ import { Label } from "@/components/ui/label"
 import { useStore } from "@/store/useStore"
 import { authService } from "@/services/auth"
 import { useTheme } from "@/components/theme-provider"
+import { useQueryClient } from "@tanstack/react-query"
 
 export function AuthModal() {
   const { isAuthModalOpen, setAuthModalOpen, authModalMode, login } = useStore()
   const { setTheme } = useTheme()
+  const queryClient = useQueryClient()
   const isLoginMode = authModalMode === 'login'
   const [isLoading, setIsLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
@@ -43,6 +45,7 @@ export function AuthModal() {
         : await authService.signup({ email, username, password })
         
       login(response.user, response.token)
+      queryClient.clear()
       if (response.user.themePreference) {
         setTheme(response.user.themePreference.toLowerCase() as any)
       }

@@ -12,5 +12,6 @@ public class PostResponse {
     private String authorUsername;
     private String communityName;
     private Integer score;
+    private String userVote; // "up", "down", or null
     private LocalDateTime createdAt;
 }

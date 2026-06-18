@@ -167,4 +167,36 @@ class CommentControllerIntegrationTest {
             .andExpect(jsonPath("$[0].replies", hasSize(1))) // 1 reply
             .andExpect(jsonPath("$[0].replies[0].content").value("This is a reply"));
     }
+
+    @Test
+    void getPostComments_withUserVote_returnsUserVote() throws Exception {
+        // Create parent comment
+        CommentCreateRequest parentReq = new CommentCreateRequest();
+        parentReq.setContent("Vote comment");
+        String parentResponse = mockMvc.perform(post("/api/posts/" + testPostId + "/comments")
+                .header("Authorization", "Bearer " + userToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(parentReq)))
+            .andExpect(status().isCreated())
+            .andReturn().getResponse().getContentAsString();
+
+        Long commentId = objectMapper.readTree(parentResponse).get("id").asLong();
+
+        // user1 votes down
+        io.github.pourya_moghaddam.echo.vote.dto.VoteRequest voteReq = new io.github.pourya_moghaddam.echo.vote.dto.VoteRequest();
+        voteReq.setDirection(io.github.pourya_moghaddam.echo.vote.VoteDirection.DOWN);
+
+        mockMvc.perform(post("/api/comments/" + commentId + "/vote")
+                .header("Authorization", "Bearer " + userToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(voteReq)))
+            .andExpect(status().isOk());
+
+        // user1 fetches comments and sees userVote = "down"
+        mockMvc.perform(get("/api/posts/" + testPostId + "/comments")
+                .header("Authorization", "Bearer " + userToken))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$[0].id").value(commentId))
+            .andExpect(jsonPath("$[0].userVote").value("down"));
+    }
 }

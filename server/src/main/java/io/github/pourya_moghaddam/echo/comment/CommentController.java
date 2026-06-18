@@ -39,8 +39,11 @@ public class CommentController {
     }
 
     @GetMapping("/posts/{postId}/comments")
-    public List<CommentResponse> getPostComments(@PathVariable Long postId) {
-        return commentService.getPostComments(postId);
+    public List<CommentResponse> getPostComments(
+            @PathVariable Long postId,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        String username = userDetails != null ? userDetails.getUsername() : null;
+        return commentService.getPostComments(postId, username);
     }
 
     @PostMapping("/comments/{commentId}/vote")

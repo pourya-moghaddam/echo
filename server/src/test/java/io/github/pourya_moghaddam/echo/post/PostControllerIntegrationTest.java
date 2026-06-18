@@ -187,4 +187,34 @@ class PostControllerIntegrationTest {
             .andExpect(jsonPath("$.content[0].title").value("Post 2")) // latest first
             .andExpect(jsonPath("$.content[1].title").value("Post 1"));
     }
+
+    @Test
+    void getPost_existingId_returnsPost() throws Exception {
+        PostCreateRequest request = new PostCreateRequest();
+        request.setTitle("Specific Post");
+        request.setContent("Specific Content");
+
+        String response = mockMvc.perform(post("/api/communities/java/posts")
+                .header("Authorization", "Bearer " + userToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+            .andExpect(status().isCreated())
+            .andReturn().getResponse().getContentAsString();
+
+        long postId = objectMapper.readTree(response).get("id").asLong();
+
+        mockMvc.perform(get("/api/posts/" + postId))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.id").value(postId))
+            .andExpect(jsonPath("$.title").value("Specific Post"))
+            .andExpect(jsonPath("$.content").value("Specific Content"))
+            .andExpect(jsonPath("$.authorUsername").value("user1"))
+            .andExpect(jsonPath("$.communityName").value("java"));
+    }
+
+    @Test
+    void getPost_nonExistingId_returnsNotFound() throws Exception {
+        mockMvc.perform(get("/api/posts/99999"))
+            .andExpect(status().isNotFound());
+    }
 }

@@ -2,7 +2,7 @@
 
 Echo is a modern, full-stack social media platform and community-driven discussion app (inspired by Reddit). It enables users to create communities, share posts, engage in nested discussions, and vote on content.
 
-![Demo GIF](<!-- TODO: Insert Demo GIF URL here -->)
+<img width="1861" height="949" alt="echo-demo" src="https://github.com/user-attachments/assets/4c64fd5e-44ec-45c5-87e5-74e9652ed4c5" />
 
 ## 🚀 Features
 

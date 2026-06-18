@@ -34,8 +34,10 @@ public class PostController {
     public ResponseEntity<Page<PostResponse>> getCommunityPosts(
             @PathVariable String name,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        return ResponseEntity.ok(postService.getPostsByCommunity(name, page, size));
+            @RequestParam(defaultValue = "10") int size,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        String username = userDetails != null ? userDetails.getUsername() : null;
+        return ResponseEntity.ok(postService.getPostsByCommunity(name, page, size, username));
     }
 
     @GetMapping("/feed")
@@ -49,13 +51,18 @@ public class PostController {
     @GetMapping("/posts/popular")
     public ResponseEntity<Page<PostResponse>> getPopularPosts(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        return ResponseEntity.ok(postService.getPopularPosts(page, size));
+            @RequestParam(defaultValue = "10") int size,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        String username = userDetails != null ? userDetails.getUsername() : null;
+        return ResponseEntity.ok(postService.getPopularPosts(page, size, username));
     }
 
     @GetMapping("/posts/{postId}")
-    public ResponseEntity<PostResponse> getPost(@PathVariable Long postId) {
-        return ResponseEntity.ok(postService.getPost(postId));
+    public ResponseEntity<PostResponse> getPost(
+            @PathVariable Long postId,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        String username = userDetails != null ? userDetails.getUsername() : null;
+        return ResponseEntity.ok(postService.getPost(postId, username));
     }
 
     @PostMapping("/posts/{postId}/vote")

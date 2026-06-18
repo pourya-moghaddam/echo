@@ -8,6 +8,7 @@ import { authService } from "@/services/auth"
 import { userService } from "@/services/user"
 import { useTheme } from "@/components/theme-provider"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
+import { useQueryClient } from "@tanstack/react-query"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,6 +21,7 @@ export default function Navbar() {
   const { currentUser, logout, setAuthModalOpen } = useStore()
   const { theme, setTheme } = useTheme()
   const location = useLocation()
+  const queryClient = useQueryClient()
   
   const communityMatch = location.pathname.match(/^\/c\/([^\/]+)/)
   const currentCommunity = communityMatch ? communityMatch[1] : ''
@@ -109,6 +111,7 @@ export default function Navbar() {
                       console.error("Backend logout failed", e)
                     }
                     logout()
+                    queryClient.clear()
                   }} className="text-destructive cursor-pointer">
                     Log out
                   </DropdownMenuItem>

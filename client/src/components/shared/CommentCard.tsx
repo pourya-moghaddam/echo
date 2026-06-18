@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Link } from "react-router-dom"
 import { MessageSquare, MoreHorizontal, CornerDownRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -18,6 +18,7 @@ export interface CommentProps {
   score: number
   replies?: CommentProps[]
   isRoot?: boolean
+  userVote?: 'up' | 'down' | null
 }
 
 export function CommentCard({ comment }: { comment: CommentProps }) {
@@ -30,6 +31,14 @@ export function CommentCard({ comment }: { comment: CommentProps }) {
   const avatarLetter = authorName[0]?.toUpperCase() || "?"
   const timeAgoStr = comment.createdAt ? formatTimeAgo(comment.createdAt) : ""
 
+  const [localScore, setLocalScore] = useState(comment.score)
+  const [localVote, setLocalVote] = useState<'up' | 'down' | null>(comment.userVote || null)
+
+  useEffect(() => {
+    setLocalScore(comment.score)
+    setLocalVote(comment.userVote || null)
+  }, [comment.score, comment.userVote])
+
   const submitReply = useMutation({
     mutationFn: () => postService.replyToComment(comment.id, replyContent),
     onSuccess: () => {
@@ -39,6 +48,33 @@ export function CommentCard({ comment }: { comment: CommentProps }) {
       queryClient.invalidateQueries({ queryKey: ['comments'] })
     }
   })
+
+  const handleVoteClick = async (dir: 'up' | 'down') => {
+    let newVote: 'up' | 'down' | null = dir
+    let scoreChange = 0
+
+    if (localVote === dir) {
+      newVote = null
+      scoreChange = dir === 'up' ? -1 : 1
+    } else if (localVote === 'up' && dir === 'down') {
+      scoreChange = -2
+    } else if (localVote === 'down' && dir === 'up') {
+      scoreChange = 2
+    } else {
+      scoreChange = dir === 'up' ? 1 : -1
+    }
+
+    setLocalVote(newVote)
+    setLocalScore(prev => prev + scoreChange)
+
+    try {
+      const apiDir = newVote ? newVote.toUpperCase() as 'UP'|'DOWN' : 'NONE'
+      await postService.voteComment(comment.id, apiDir)
+    } catch (e) {
+      setLocalVote(localVote)
+      setLocalScore(localScore)
+    }
+  }
 
   const hasReplies = comment.replies && comment.replies.length > 0;
 
@@ -68,7 +104,7 @@ export function CommentCard({ comment }: { comment: CommentProps }) {
           </p>
           
           <div className="flex items-center gap-2 -ml-2 mb-2">
-            <VoteWidget score={comment.score} direction="horizontal" />
+            <VoteWidget score={localScore} userVote={localVote} onVote={handleVoteClick} direction="horizontal" />
             <Button variant="ghost" size="sm" className="h-8 gap-1.5 text-muted-foreground" onClick={() => setIsReplying(!isReplying)}>
               <MessageSquare className="h-4 w-4" />
               <span className="text-xs font-medium">Reply</span>

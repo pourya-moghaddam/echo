@@ -217,4 +217,44 @@ class PostControllerIntegrationTest {
         mockMvc.perform(get("/api/posts/99999"))
             .andExpect(status().isNotFound());
     }
+
+    @Test
+    void getPost_withUserVote_returnsUserVote() throws Exception {
+        PostCreateRequest request = new PostCreateRequest();
+        request.setTitle("Vote Post");
+        request.setContent("Vote Content");
+
+        String response = mockMvc.perform(post("/api/communities/java/posts")
+                .header("Authorization", "Bearer " + userToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+            .andExpect(status().isCreated())
+            .andReturn().getResponse().getContentAsString();
+
+        long postId = objectMapper.readTree(response).get("id").asLong();
+
+        // user2 votes up
+        io.github.pourya_moghaddam.echo.vote.dto.VoteRequest voteReq = new io.github.pourya_moghaddam.echo.vote.dto.VoteRequest();
+        voteReq.setDirection(io.github.pourya_moghaddam.echo.vote.VoteDirection.UP);
+
+        mockMvc.perform(post("/api/posts/" + postId + "/vote")
+                .header("Authorization", "Bearer " + user2Token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(voteReq)))
+            .andExpect(status().isOk());
+
+        // user2 fetches the post and sees userVote = "up"
+        mockMvc.perform(get("/api/posts/" + postId)
+                .header("Authorization", "Bearer " + user2Token))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.id").value(postId))
+            .andExpect(jsonPath("$.userVote").value("up"));
+            
+        // user1 fetches the post and sees userVote = null (or absent)
+        mockMvc.perform(get("/api/posts/" + postId)
+                .header("Authorization", "Bearer " + userToken))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.id").value(postId))
+            .andExpect(jsonPath("$.userVote").doesNotExist());
+    }
 }

@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react"
 import { Link } from "react-router-dom"
 import { MessageSquare, Share2, MoreHorizontal } from "lucide-react"
 import { Card } from "@/components/ui/card"
@@ -9,7 +10,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-
+import { postService } from "@/services/post"
 import { formatTimeAgo } from "@/lib/utils"
 
 export interface PostProps {
@@ -26,12 +27,51 @@ export interface PostProps {
 
 export function PostCard({ post, onVote, hideCommunity, isDetail }: { post: PostProps, onVote?: (id: string, dir: 'up' | 'down') => void, hideCommunity?: boolean, isDetail?: boolean }) {
   const dateStr = formatTimeAgo(post.createdAt)
+  
+  const [localScore, setLocalScore] = useState(post.score)
+  const [localVote, setLocalVote] = useState<'up' | 'down' | null>(post.userVote || null)
+
+  useEffect(() => {
+    setLocalScore(post.score)
+    setLocalVote(post.userVote || null)
+  }, [post.score, post.userVote])
+
+  const handleVoteClick = async (dir: 'up' | 'down') => {
+    let newVote: 'up' | 'down' | null = dir
+    let scoreChange = 0
+
+    if (localVote === dir) {
+      newVote = null
+      scoreChange = dir === 'up' ? -1 : 1
+    } else if (localVote === 'up' && dir === 'down') {
+      scoreChange = -2
+    } else if (localVote === 'down' && dir === 'up') {
+      scoreChange = 2
+    } else {
+      scoreChange = dir === 'up' ? 1 : -1
+    }
+
+    setLocalVote(newVote)
+    setLocalScore(prev => prev + scoreChange)
+
+    try {
+      if (onVote) {
+        onVote(String(post.id), dir)
+      } else {
+        const apiDir = newVote ? newVote.toUpperCase() as 'UP'|'DOWN' : 'NONE'
+        await postService.votePost(Number(post.id), apiDir)
+      }
+    } catch (e) {
+      setLocalVote(localVote)
+      setLocalScore(localScore)
+    }
+  }
 
   return (
     <Card className={`flex flex-row gap-0 py-0 overflow-hidden transition-colors bg-background ring-0 border border-border/40 shadow-none ${!isDetail ? 'hover:bg-card cursor-pointer' : ''} group`}>
       {/* Vote Sidebar */}
       <div className="bg-muted/30 px-2 py-3 w-12 flex flex-col items-center shrink-0 border-r border-border/50">
-        <VoteWidget score={post.score} userVote={post.userVote} onVote={(dir) => onVote?.(String(post.id), dir)} />
+        <VoteWidget score={localScore} userVote={localVote} onVote={handleVoteClick} />
       </div>
 
       {/* Main Content */}
